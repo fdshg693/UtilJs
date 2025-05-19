@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>JSON Manipulator</title>
+  <style>
+    body { font-family: sans-serif; margin: 2em; }
+    textarea { width: 100%; height: 120px; }
+    .row { margin-bottom: 1em; }
+    label { display: block; margin-bottom: 0.3em; }
+    input[type="text"] { width: 200px; }
+    #output { white-space: pre-wrap; background: #f8f8f8; padding: 1em; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <h1>JSON Manipulator</h1>
+  <div class="row">
+    <label for="jsonInput">JSON入力</label>
+    <textarea id="jsonInput" placeholder='例: [{"name":"A","age":20},{"name":"B","age":30}]' oninput="showJsonInfo()"></textarea>
+  </div>
+  <div class="row" id="jsonInfo" style="color:#333; font-size: 0.95em;"></div>
+  <div class="row">
+    <label for="indexInput">配列の番号で抽出 (例: 0)</label>
+    <input type="text" id="indexInput" placeholder="番号">
+    <button onclick="extractByIndex()">抽出</button>
+  </div>
+  <div class="row">
+    <label for="keyInput">項目名で値を抽出 (例: name)</label>
+    <input type="text" id="keyInput" placeholder="項目名">
+    <button onclick="extractByKey()">抽出</button>
+  </div>
+  <div class="row">
+    <button onclick="clearAll()">クリア</button>
+  </div>
+  <div class="row">
+    <strong>出力:</strong>
+    <div id="output"></div>
+  </div>
+  <script>
+    function getJson() {
+      const input = document.getElementById('jsonInput').value;
+      try {
+        return JSON.parse(input);
+      } catch (e) {
+        return null;
+      }
+    }
+    function showOutput(msg) {
+      document.getElementById('output').textContent = typeof msg === 'string' ? msg : JSON.stringify(msg, null, 2);
+    }
+    function showJsonInfo() {
+      const data = getJson();
+      const infoDiv = document.getElementById('jsonInfo');
+      if (!data) {
+        infoDiv.textContent = '有効なJSONを入力してください。';
+        return;
+      }
+      if (!Array.isArray(data)) {
+        infoDiv.textContent = '配列のJSONを入力してください。';
+        return;
+      }
+      const count = data.length;
+      // 項目名一覧を集める
+      const keys = new Set();
+      data.forEach(item => {
+        if (item && typeof item === 'object' && !Array.isArray(item)) {
+          Object.keys(item).forEach(k => keys.add(k));
+        }
+      });
+      infoDiv.textContent = `要素数: ${count}  |  項目: ${Array.from(keys).join(', ') || 'なし'}`;
+    }
+    function extractByIndex() {
+      const data = getJson();
+      if (!Array.isArray(data)) {
+        showOutput('配列を入力してください');
+        return;
+      }
+      const idxStr = document.getElementById('indexInput').value;
+      if (!idxStr.trim()) {
+        showOutput('番号を入力してください');
+        return;
+      }
+      const idxArr = idxStr.split(',').map(s => parseInt(s.trim(), 10)).filter(n => !isNaN(n));
+      if (idxArr.length === 0) {
+        showOutput('有効な番号をカンマ区切りで入力してください');
+        return;
+      }
+      const result = idxArr.map(idx => (idx >= 0 && idx < data.length) ? data[idx] : undefined);
+      showOutput(result);
+    }
+    function extractByKey() {
+      const data = getJson();
+      const keyStr = document.getElementById('keyInput').value.trim();
+      if (!Array.isArray(data)) {
+        showOutput('配列を入力してください');
+        return;
+      }
+      if (!keyStr) {
+        showOutput('項目名を入力してください');
+        return;
+      }
+      const keys = keyStr.split(',').map(s => s.trim()).filter(Boolean);
+      if (keys.length === 0) {
+        showOutput('有効な項目名をカンマ区切りで入力してください');
+        return;
+      }
+      // 各要素ごとに、指定した項目名の値をまとめて返す
+      const result = data.map(item => {
+        if (item && typeof item === 'object') {
+          const obj = {};
+          keys.forEach(k => { obj[k] = item[k]; });
+          return obj;
+        }
+        return undefined;
+      });
+      showOutput(result);
+    }
+    function clearAll() {
+      document.getElementById('jsonInput').value = '';
+      document.getElementById('indexInput').value = '';
+      document.getElementById('keyInput').value = '';
+      showOutput('');
+      showJsonInfo();
+    }
+    // 初期化
+    window.onload = showJsonInfo;
+  </script>
+</body>
+</html>
