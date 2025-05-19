@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comma Splitter</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f7f7fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        h3 {
+            color: #34495e;
+            margin-left: 20px;
+        }
+
+        p {
+            margin-left: 20px;
+            color: #555;
+        }
+
+        #inputText,
+        #splitter,
+        #prefix,
+        #suffix {
+            margin: 10px 0 10px 20px;
+            padding: 8px;
+            border: 1px solid #bbb;
+            border-radius: 4px;
+            font-size: 1em;
+            width: 80%;
+            box-sizing: border-box;
+        }
+
+        #splitter,
+        #prefix,
+        #suffix {
+            width: 40%;
+        }
+
+        button {
+            margin-left: 20px;
+            padding: 8px 18px;
+            background: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #217dbb;
+        }
+
+        #sortOrder,
+        #numbering {
+            margin-left: 20px;
+            padding: 6px;
+            border-radius: 4px;
+            border: 1px solid #bbb;
+            font-size: 1em;
+        }
+
+        #output {
+            margin: 30px 20px 0 20px;
+            padding: 18px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background: #fff;
+            min-height: 60px;
+            font-size: 1.1em;
+            color: #222;
+            white-space: pre-line;
+        }
+
+        label {
+            margin-left: 10px;
+            font-size: 1em;
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Comma Splitter</h1>
+    <h3>how to use</h3>
+    <p>
+        Enter text with commas in the input box below.<br>
+        You can also specify a different splitter if needed.<br>
+        Click the "Split and Show" button to see the result.<br>
+        The result is sorted in ascending order.<br>
+        For example, if you enter "apple,banana,cherry" and click the button, the output will be:<br>
+        Result:<br>
+        apple<br>
+        banana<br>
+        cherry
+    </p>
+
+    <textarea id="inputText" rows="4" cols="50" placeholder="Enter text with commas"></textarea><br>
+    <input id="splitter" type="text" placeholder="Enter a splitter (default is ',')"><br>
+    <button onclick="splitInput()">Split and Show</button> <br>
+    <select id="sortOrder">
+        <option value="asc">Ascending</option>
+        <option value="desc">Descending</option>
+    </select>
+    <label for="numbering"><input id="numbering" type="checkbox"> 番号を付与する</label><br>
+    <input id="prefix" type="text" placeholder="Enter a prefix"><br>
+    <input id="suffix" type="text" placeholder="Enter a suffix"><br>
+
+    <div id="output"></div>
+
+    <script>
+        function splitInput() {
+            // Get the input from the textarea  
+            const input = document.getElementById('inputText').value;
+
+            // Get the splitter from the input field, default to ',' if empty
+            const splitter = document.getElementById('splitter').value || ',';
+
+            // Split the input by commas  
+            const resultArray = input.split(splitter);
+
+            // Get the sort order from the dropdown
+            const sortOrder = document.getElementById('sortOrder').value;
+
+            // Sort the result array based on the selected order
+            if (sortOrder === 'asc') {
+                resultArray.sort((a, b) => a.trim().localeCompare(b.trim()));
+            } else {
+                resultArray.sort((a, b) => b.trim().localeCompare(a.trim()));
+            }
+
+            // Get the prefix and suffix from the input fields
+            const prefix = document.getElementById('prefix').value;
+            const suffix = document.getElementById('suffix').value;
+            // 番号付与オプション取得
+            const numbering = document.getElementById('numbering').checked;
+
+            // Add prefix and suffix to each element in the result array
+            for (let i = 0; i < resultArray.length; i++) {
+                let item = resultArray[i].trim();
+                if (item === '') continue;
+                let line = prefix + item + suffix;
+                if (numbering) {
+                    line = (i + 1) + '. ' + line;
+                }
+                resultArray[i] = line;
+            }
+            // 空要素を除外
+            const filteredResult = resultArray.filter(x => x.trim() !== '');
+            // Display the result in the output div  
+            document.getElementById('output').innerText = 'Result:\n' + filteredResult.join('\n');
+        }  
+    </script>
+</body>
+
+</html>

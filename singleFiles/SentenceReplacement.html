@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentence Replacement</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 30px auto;
+            max-width: 600px;
+            background: #f7f7fa;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            padding: 32px 24px;
+        }
+
+        h1 {
+            color: #2d5be3;
+            margin-bottom: 8px;
+        }
+
+        h3 {
+            color: #444;
+            margin-top: 0;
+        }
+
+        p {
+            background: #eaf0fa;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #2d5be3;
+        }
+
+        textarea {
+            margin: 8px 0 16px 0;
+            padding: 8px;
+            width: 100%;
+            max-width: 100%;
+            min-height: 40px;
+            border: 1px solid #bfc9d9;
+            border-radius: 6px;
+            font-size: 15px;
+            background: #fff;
+            transition: border 0.2s;
+        }
+
+        textarea:focus {
+            border: 1.5px solid #2d5be3;
+            outline: none;
+        }
+
+        button {
+            background: #2d5be3;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 28px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 18px;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #1746b0;
+        }
+
+        ul#result {
+            background: #fff;
+            border-radius: 8px;
+            padding: 16px 20px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+            margin-top: 0;
+        }
+
+        ul#result li {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #222;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>文の単語置換ツール</h1>
+    <h3>使い方</h3>
+    <p>1つ目のボックスに元の文、2つ目に置換したい単語、3つ目に置換後の単語（カンマ区切り）を入力してください。<br>
+        置換後の単語が複数ある場合、元の文の指定した単語がそれぞれの単語に置き換えられた文が生成されます。<br>
+        例：「I have a cat」が元の文、「cat」が置換対象、「dog, whale」が置換後の単語の場合、<br>
+        「I have a dog」と「I have a whale」が出力されます。<br>
+        複数語を置換したい場合はカンマで区切って入力してください。
+    </p>
+
+    <label for="sentence">元の文：</label><br>
+    <textarea id="sentence" placeholder="ここに文を入力してください"></textarea>
+    <br>
+    <label for="target">置換対象の単語：</label><br>
+    <textarea id="target" placeholder="置換したい単語"></textarea>
+    <br>
+
+    <label for="replacements">置換後の単語（カンマ区切り）：</label><br>
+    <textarea id="replacements" placeholder="dog, whale"></textarea>
+    <br>
+
+    <button onclick="generateSentences()">文を生成</button>
+
+    <h2>生成された文：</h2>
+    <ul id="result"></ul>
+
+    <script>
+        function generateSentences() {
+            const sentence = document.getElementById('sentence').value;
+            const target = document.getElementById('target').value;
+            const replacementsInput = document.getElementById('replacements').value;
+            const replacements = replacementsInput.split(',').map(item => item.trim());
+
+            const resultElement = document.getElementById('result');
+            resultElement.innerHTML = ''; // Clear previous results  
+
+            replacements.forEach(replacement => {
+                const newSentence = sentence.replaceAll(target, replacement);
+                const listItem = document.createElement('li');
+                listItem.textContent = newSentence;
+                resultElement.appendChild(listItem);
+            });
+        }
+    </script>
+
+</body>
+
+</html>
